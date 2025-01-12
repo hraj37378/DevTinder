@@ -38,7 +38,7 @@ authRouter.post("/login", async (req, res) => {
     }
     const isPasswordValid = await user.verifyPassword(password);
     if (!isPasswordValid) {
-      throw new Error("Password doesn't match");
+      throw new Error("Invalid Email or Password");
     }
     // Create a JWT token
     const token = await user.getJWT();
@@ -47,20 +47,17 @@ authRouter.post("/login", async (req, res) => {
     res.cookie("token", token, {
       expires: new Date(Date.now() + 8 * 3600000),
     });
-    res.json({
-      message: "User logged in successfully",
-      data: user
-    });
+    res.send(user);
   } catch (error) {
-    res.status(400).send("ERROR :" + error.message);
+    res.status(400).send(error.message);
   }
 });
 
 authRouter.post("/logout", async (req, res) => {
   res
     .cookie("token", null, {
-     expires: new Date(Date.now()),
-     })
+      expires: new Date(Date.now()),
+    })
     .send("User logged out successfully");
 });
 
